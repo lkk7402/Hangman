@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %} 
+<h1>Game Lists</h1>
+<ul>
+    {% for game in games %}
+    <li>
+        <p>Word to Guess:</p>: {{ game.word_to_guess }}<br>
+        <p>Current State:</p>: {{ game.current_state }}<br>
+        <p>Incorrect Guesses Made:</p>: {{ game.incorrect_guesses_made }}<br>
+        <p>Remaining Guesses:</p>: {{ game.remaining_guesses }}<br>
+        <p>Game Status:</p>: {{ game.game_status }}<br>
+        
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
