@@ -1,6 +1,8 @@
 from django.shortcuts import render,HttpResponse,redirect
 from .models import HangmanGame
 import random
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 # Create your views here.
 def home(request):
     return render(request, 'home.html')
@@ -25,8 +27,25 @@ def new_game(request):
         remaining_guesses=max_incorrect_guesses,
         game_status='InProgress'
     )
-    
+    # Return the ID of the newly created game object in the HTTP response
+    return JsonResponse({'id': new_game.id})
     # Redirect to the games page after starting a new game
-    return redirect('games')
+    #return redirect('games')
    # return render(request, 'new.html')
+   
+def game_state(request, id):
+    # Retrieve the HangmanGame instance based on the provided ID
+    game = get_object_or_404(HangmanGame, pk=id)
+
+    # Prepare the game state data
+    game_state = {
+        'current_state': game.current_state,
+        'word_state': ''.join([letter if letter in game.current_state else '_' for letter in game.word_to_guess]),
+        'incorrect_guesses_made': game.incorrect_guesses_made,
+        'remaining_guesses': game.remaining_guesses,
+        'game_status': game.game_status
+    }
+
+    # Return the game state in the HTTP response
+    return JsonResponse(game_state)  
 
