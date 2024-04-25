@@ -52,13 +52,16 @@ def make_guess(request, id):
     # Retrieve the HangmanGame instance based on the provided ID
     game = get_object_or_404(HangmanGame, pk=id)
 
-    # Get the guessed character from the request
-    guess = request.GET.get('guess')
+    # Get the guessed character from the request and convert it to lowercase
+    guess = request.GET.get('guess', '').lower()
 
-    # Check if the guessed character is in the word to guess
-    if guess in game.word_to_guess:
+    # Convert the word to guess to lowercase
+    word_to_guess_lower = game.word_to_guess.lower()
+
+    # Check if the guessed character is in the lowercase version of the word to guess
+    if guess in word_to_guess_lower:
         # Update the current state of the game with the correct guess
-        game.current_state = ''.join([letter if letter == guess or letter in game.current_state else '_' for letter in game.word_to_guess])
+        game.current_state = ''.join([letter if letter.lower() == guess or letter in game.current_state else '_' for letter in game.word_to_guess])
         # Update game status if the current state matches the word to guess
         if game.current_state == game.word_to_guess:
             game.game_status = 'Won'
@@ -81,7 +84,7 @@ def make_guess(request, id):
     # Prepare the game state data
     game_state = {
         'current_state': game.current_state,
-        'word_state': ''.join([letter if letter in game.current_state else '_' for letter in game.word_to_guess]),
+        'word_state': ''.join([letter if letter.lower() in game.current_state or letter.isupper() else '_' for letter in game.word_to_guess]),
         'incorrect_guesses_made': game.incorrect_guesses_made,
         'remaining_guesses': game.remaining_guesses,
         'game_status': game.game_status,
